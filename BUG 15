@@ -1,1 +1,485 @@
-ss
+import React, { useState, useEffect } from 'react';
+import { X, MapPin, Phone, Mail, Download, ChevronLeft, ChevronRight, Home, Building2, Image as ImageIcon, Map, MessageSquare } from 'lucide-react';
+
+const RealEstateShowcase = () => {
+  const [selectedApartment, setSelectedApartment] = useState(null);
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState('home');
+
+  // Apartment data
+  const apartments = [
+    { id: '1A', rooms: '3.5', floor: 'EG', area: '120', status: 'verfügbar', price: 'CHF 890,000' },
+    { id: '1B', rooms: '4.5', floor: 'EG', area: '150', status: 'verkauft', price: 'CHF 1,200,000' },
+    { id: '2A', rooms: '3.5', floor: 'OG', area: '120', status: 'verfügbar', price: 'CHF 920,000' },
+    { id: '2B', rooms: '4.5', floor: 'OG', area: '150', status: 'verfügbar', price: 'CHF 1,250,000' },
+  ];
+
+  // Gallery images (placeholder - you'd replace with your renders)
+  const galleryImages = [
+    { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200', title: 'Aussenansicht' },
+    { url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200', title: 'Wohnzimmer' },
+    { url: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200', title: 'Küche' },
+    { url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200', title: 'Schlafzimmer' },
+    { url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200', title: 'Badezimmer' },
+    { url: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200', title: 'Balkon' },
+  ];
+
+  // Scroll animation
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = document.querySelectorAll('section[id]');
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) {
+          section.classList.add('animate-in');
+        }
+      });
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const NavigationMenu = () => (
+    <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 className="text-2xl font-serif tracking-tight">Residenz Luzern</h1>
+        <div className="hidden md:flex gap-8 text-sm font-medium">
+          {[
+            { id: 'home', label: 'Home', icon: Home },
+            { id: 'apartments', label: 'Wohnungen', icon: Building2 },
+            { id: 'gallery', label: 'Galerie', icon: ImageIcon },
+            { id: 'location', label: 'Lage', icon: Map },
+            { id: 'contact', label: 'Kontakt', icon: MessageSquare }
+          ].map(item => (
+            
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={() => setActiveSection(item.id)}
+              className={`flex items-center gap-2 hover:text-gray-600 transition ${
+                activeSection === item.id ? 'text-black' : 'text-gray-500'
+              }`}
+            >
+              <item.icon size={16} />
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+
+  const HeroSection = () => (
+    <section id="home" className="h-screen relative flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+      <div className="absolute inset-0 bg-black/40"></div>
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920)' }}
+      ></div>
+      <div className="relative z-10 text-center max-w-4xl px-6 animate-fade-in">
+        <h1 className="text-6xl md:text-7xl font-serif mb-6 leading-tight">
+          Wohnen auf<br />höchstem Niveau
+        </h1>
+        <p className="text-xl md:text-2xl mb-8 text-gray-200 font-light">
+          Exklusive 3.5 und 4.5 Zimmer Wohnungen im Herzen von Luzern
+        </p>
+        <div className="flex gap-4 justify-center">
+          
+            href="#apartments"
+            className="px-8 py-4 bg-white text-black rounded-sm hover:bg-gray-100 transition font-medium"
+          >
+            Wohnungen entdecken
+          </a>
+          <button className="px-8 py-4 border-2 border-white text-white rounded-sm hover:bg-white hover:text-black transition font-medium flex items-center gap-2">
+            <Download size={20} />
+            Broschüre
+          </button>
+        </div>
+      </div>
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const ApartmentsSection = () => (
+    <section id="apartments" className="py-24 bg-white opacity-0 transition-opacity duration-1000">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-serif mb-4">Ihre neue Wohnung</h2>
+          <p className="text-xl text-gray-600">Wählen Sie aus unseren verfügbaren Einheiten</p>
+        </div>
+
+        {/* Interactive Floor Plan */}
+        <div className="bg-gray-50 p-12 rounded-lg mb-12">
+          <h3 className="text-3xl font-serif text-center mb-8">Interaktiver Grundriss</h3>
+          
+          <svg viewBox="0 0 600 450" className="w-full max-w-4xl mx-auto">
+            {/* Ground Floor */}
+            <text x="20" y="35" className="text-sm fill-gray-600" fontFamily="serif">Erdgeschoss</text>
+            
+            {/* Apartment 1A */}
+            <g className="cursor-pointer" onClick={() => setSelectedApartment(apartments[0])}>
+              <rect
+                x="60" y="60" width="220" height="140"
+                className={`transition-all duration-300 ${
+                  apartments[0].status === 'verfügbar' 
+                    ? 'fill-green-100 stroke-green-500 hover:fill-green-200' 
+                    : 'fill-gray-100 stroke-gray-400'
+                } stroke-2`}
+              />
+              <text x="170" y="120" textAnchor="middle" className="text-2xl font-serif pointer-events-none" fill="#059669">1A</text>
+              <text x="170" y="145" textAnchor="middle" className="text-sm pointer-events-none" fill="#059669">120 m²</text>
+              <text x="170" y="165" textAnchor="middle" className="text-xs pointer-events-none" fill="#059669">3.5 Zimmer</text>
+            </g>
+
+            {/* Apartment 1B */}
+            <g className="cursor-pointer" onClick={() => setSelectedApartment(apartments[1])}>
+              <rect
+                x="320" y="60" width="220" height="140"
+                className={`transition-all duration-300 ${
+                  apartments[1].status === 'verfügbar' 
+                    ? 'fill-green-100 stroke-green-500 hover:fill-green-200' 
+                    : 'fill-gray-100 stroke-gray-400'
+                } stroke-2`}
+              />
+              <text x="430" y="120" textAnchor="middle" className="text-2xl font-serif pointer-events-none" fill="#9ca3af">1B</text>
+              <text x="430" y="145" textAnchor="middle" className="text-sm pointer-events-none" fill="#9ca3af">150 m²</text>
+              <text x="430" y="165" textAnchor="middle" className="text-xs pointer-events-none" fill="#9ca3af">4.5 Zimmer</text>
+            </g>
+
+            {/* First Floor */}
+            <text x="20" y="235" className="text-sm fill-gray-600" fontFamily="serif">Obergeschoss</text>
+            
+            {/* Apartment 2A */}
+            <g className="cursor-pointer" onClick={() => setSelectedApartment(apartments[2])}>
+              <rect
+                x="60" y="260" width="220" height="140"
+                className={`transition-all duration-300 ${
+                  apartments[2].status === 'verfügbar' 
+                    ? 'fill-green-100 stroke-green-500 hover:fill-green-200' 
+                    : 'fill-gray-100 stroke-gray-400'
+                } stroke-2`}
+              />
+              <text x="170" y="320" textAnchor="middle" className="text-2xl font-serif pointer-events-none" fill="#059669">2A</text>
+              <text x="170" y="345" textAnchor="middle" className="text-sm pointer-events-none" fill="#059669">120 m²</text>
+              <text x="170" y="365" textAnchor="middle" className="text-xs pointer-events-none" fill="#059669">3.5 Zimmer</text>
+            </g>
+
+            {/* Apartment 2B */}
+            <g className="cursor-pointer" onClick={() => setSelectedApartment(apartments[3])}>
+              <rect
+                x="320" y="260" width="220" height="140"
+                className={`transition-all duration-300 ${
+                  apartments[3].status === 'verfügbar' 
+                    ? 'fill-green-100 stroke-green-500 hover:fill-green-200' 
+                    : 'fill-gray-100 stroke-gray-400'
+                } stroke-2`}
+              />
+              <text x="430" y="320" textAnchor="middle" className="text-2xl font-serif pointer-events-none" fill="#059669">2B</text>
+              <text x="430" y="345" textAnchor="middle" className="text-sm pointer-events-none" fill="#059669">150 m²</text>
+              <text x="430" y="365" textAnchor="middle" className="text-xs pointer-events-none" fill="#059669">4.5 Zimmer</text>
+            </g>
+          </svg>
+
+          <div className="flex justify-center gap-8 mt-8 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-green-100 border-2 border-green-500 rounded"></div>
+              <span>Verfügbar</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-gray-100 border-2 border-gray-400 rounded"></div>
+              <span>Verkauft</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Apartment Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {apartments.map((apt) => (
+            <div
+              key={apt.id}
+              onClick={() => setSelectedApartment(apt)}
+              className="bg-white border border-gray-200 rounded-lg p-6 cursor-pointer hover:shadow-xl transition-shadow duration-300"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-2xl font-serif">Wohnung {apt.id}</h3>
+                <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                  apt.status === 'verfügbar' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {apt.status}
+                </span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><span className="font-medium">Zimmer:</span> {apt.rooms}</p>
+                <p><span className="font-medium">Fläche:</span> {apt.area} m²</p>
+                <p><span className="font-medium">Etage:</span> {apt.floor}</p>
+                <p className="text-lg font-serif text-black mt-4">{apt.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const GallerySection = () => (
+    <section id="gallery" className="py-24 bg-gray-50 opacity-0 transition-opacity duration-1000">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-serif mb-4">Impressionen</h2>
+          <p className="text-xl text-gray-600">Entdecken Sie Ihr neues Zuhause</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {galleryImages.map((img, idx) => (
+            <div
+              key={idx}
+              onClick={() => {
+                setLightboxImage(img.url);
+                setCurrentImageIndex(idx);
+              }}
+              className="relative group cursor-pointer overflow-hidden rounded-lg aspect-[4/3]"
+            >
+              <img
+                src={img.url}
+                alt={img.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <p className="text-white text-lg font-serif">{img.title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const LocationSection = () => (
+    <section id="location" className="py-24 bg-white opacity-0 transition-opacity duration-1000">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-serif mb-4">Perfekte Lage</h2>
+          <p className="text-xl text-gray-600">Im Herzen von Luzern</p>
+        </div>
+
+        <div className="bg-gray-100 rounded-lg h-[500px] flex items-center justify-center mb-12">
+          <div className="text-center">
+            <MapPin size={48} className="mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600">Interaktive Karte</p>
+            <p className="text-sm text-gray-500 mt-2">Mapbox Integration hier</p>
+            <p className="text-xs text-gray-400 mt-4 max-w-md">
+              (In der echten Version: Interaktive Karte mit Markern für Bahnhof, Einkaufen, Schulen, Parks)
+            </p>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { icon: '🚊', title: 'Bahnhof', distance: '5 Min. zu Fuss' },
+            { icon: '🛒', title: 'Einkaufen', distance: '3 Min. zu Fuss' },
+            { icon: '🌳', title: 'Erholung', distance: '2 Min. zu Fuss' },
+          ].map((item, idx) => (
+            <div key={idx} className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="text-4xl mb-3">{item.icon}</div>
+              <h3 className="text-xl font-serif mb-2">{item.title}</h3>
+              <p className="text-gray-600">{item.distance}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const ContactSection = () => (
+    <section id="contact" className="py-24 bg-gray-900 text-white opacity-0 transition-opacity duration-1000">
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <h2 className="text-5xl font-serif mb-6">Interessiert?</h2>
+        <p className="text-xl text-gray-300 mb-12">Wir freuen uns auf Ihre Kontaktaufnahme</p>
+        
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="flex flex-col items-center gap-3">
+            <Phone size={32} />
+            <div>
+              <p className="text-sm text-gray-400">Telefon</p>
+              <p className="text-lg">+41 41 123 45 67</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <Mail size={32} />
+            <div>
+              <p className="text-sm text-gray-400">E-Mail</p>
+              <p className="text-lg">info@residenz-luzern.ch</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <MapPin size={32} />
+            <div>
+              <p className="text-sm text-gray-400">Adresse</p>
+              <p className="text-lg">Luzern, Schweiz</p>
+            </div>
+          </div>
+        </div>
+
+        <button className="px-12 py-4 bg-white text-black rounded-sm hover:bg-gray-100 transition font-medium text-lg">
+          Besichtigung vereinbaren
+        </button>
+      </div>
+    </section>
+  );
+
+  const ApartmentModal = () => {
+    if (!selectedApartment) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+            <h2 className="text-3xl font-serif">Wohnung {selectedApartment.id}</h2>
+            <button
+              onClick={() => setSelectedApartment(null)}
+              className="p-2 hover:bg-gray-100 rounded-full transition"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          
+          <div className="p-6">
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {[
+                { label: 'Zimmer', value: selectedApartment.rooms },
+                { label: 'Fläche', value: `${selectedApartment.area} m²` },
+                { label: 'Etage', value: selectedApartment.floor },
+                { label: 'Preis', value: selectedApartment.price },
+              ].map((item, idx) => (
+                <div key={idx} className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">{item.label}</p>
+                  <p className="text-2xl font-serif">{item.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mb-6">
+              <p className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+                selectedApartment.status === 'verfügbar'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {selectedApartment.status.toUpperCase()}
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-xl font-serif mb-4">Ausstattung</h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>• Moderne Küche mit hochwertigen Geräten</li>
+                <li>• Parkettböden in allen Wohnräumen</li>
+                <li>• Bodentiefe Fenster mit viel Tageslicht</li>
+                <li>• Private Terrasse mit Gartenanteil</li>
+                <li>• Tiefgaragenplatz inklusive</li>
+                <li>• Minergie-Standard</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-3">
+              <button className="flex-1 bg-black text-white py-3 px-6 rounded-sm hover:bg-gray-800 transition font-medium">
+                Grundriss herunterladen
+              </button>
+              <button className="flex-1 border border-black text-black py-3 px-6 rounded-sm hover:bg-gray-50 transition font-medium">
+                Besichtigung anfragen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const Lightbox = () => {
+    if (!lightboxImage) return null;
+
+    const nextImage = () => {
+      const nextIndex = (currentImageIndex + 1) % galleryImages.length;
+      setCurrentImageIndex(nextIndex);
+      setLightboxImage(galleryImages[nextIndex].url);
+    };
+
+    const prevImage = () => {
+      const prevIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+      setCurrentImageIndex(prevIndex);
+      setLightboxImage(galleryImages[prevIndex].url);
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex items-center justify-center p-4">
+        <button
+          onClick={() => setLightboxImage(null)}
+          className="absolute top-4 right-4 text-white hover:text-gray-300 transition"
+        >
+          <X size={32} />
+        </button>
+        
+        <button
+          onClick={prevImage}
+          className="absolute left-4 text-white hover:text-gray-300 transition"
+        >
+          <ChevronLeft size={48} />
+        </button>
+        
+        <img
+          src={lightboxImage}
+          alt="Gallery"
+          className="max-w-full max-h-full object-contain"
+        />
+        
+        <button
+          onClick={nextImage}
+          className="absolute right-4 text-white hover:text-gray-300 transition"
+        >
+          <ChevronRight size={48} />
+        </button>
+
+        <div className="absolute bottom-4 text-white text-sm">
+          {currentImageIndex + 1} / {galleryImages.length}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+        .animate-in {
+          opacity: 1 !important;
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
+      
+      <NavigationMenu />
+      <HeroSection />
+      <ApartmentsSection />
+      <GallerySection />
+      <LocationSection />
+      <ContactSection />
+      <ApartmentModal />
+      <Lightbox />
+    </div>
+  );
+};
+
+export default RealEstateShowcase;
